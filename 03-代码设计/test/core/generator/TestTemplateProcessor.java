@@ -67,6 +67,46 @@ public class TestTemplateProcessor implements DataSourceType{
         //
         //
         // 这里写代码
+		dsc = EasyMock.createMock(DataSourceConfig.class);
+		DataHolder dh1 = EasyMock.createMock(DataHolder.class);
+//		dh1.setName("sex");
+		EasyMock.expect(dh1.getValue()).andStubReturn("Female");
+		DataHolder dh2 = EasyMock.createMock(DataHolder.class);
+//		dh2.setName("readme");
+		EasyMock.expect(dh2.getValue()).andStubReturn("5");
+		DataHolder dh3 = EasyMock.createMock(DataHolder.class);
+//		dh3.setName("testexpr");
+		EasyMock.expect(dh3.getValue()).andStubReturn("5.0");
+		EasyMock.expect(dh3.getExpr()).andStubReturn("${num}+${readme}");
+		EasyMock.expect(dh3.fillValue()).andStubReturn(null);
+
+		ArrayList<DataHolder> vars = new ArrayList<DataHolder>();
+		vars.add(dh1);
+		vars.add(dh2);
+		vars.add(dh3);
+
+		ConstDataSource ds = EasyMock.createMock(ConstDataSource.class);
+		ds.setVars(vars);
+		EasyMock.expect(ds.getVars()).andStubReturn(vars);
+		EasyMock.expect(ds.getDataHolder("sex")).andStubReturn(dh1);
+		EasyMock.expect(ds.getDataHolder("readme")).andStubReturn(dh2);
+		EasyMock.expect(ds.getDataHolder("testexpr")).andStubReturn(dh3);
+		EasyMock.expect(ds.getType()).andStubReturn("");
+
+		ArrayList<DataSource> dss = new ArrayList<DataSource>();
+		dss.add(ds);
+
+//		dsc.setFilename("");
+//		EasyMock.expectLastCall().andReturn(false);
+//		dsc.setDataSources(dss);
+		EasyMock.expect(dsc.getDataSources()).andStubReturn(dss);
+		EasyMock.expect(dsc.getFilename()).andStubReturn("test");
+		EasyMock.expect(dsc.getConstDataSource()).andStubReturn(ds);
+		EasyMock.expect(dsc.getDataSource(null)).andStubReturn(ds);
+
+		EasyMock.replay( ds, dh1, dh2, dh3);
+		PowerMock.mockStatic(DataSourceConfig.class);
+		EasyMock.expect(DataSourceConfig.newInstance()).andStubReturn(dsc);
         //
         //------------------------------------------------
 		//5. 重放所有的行为。
